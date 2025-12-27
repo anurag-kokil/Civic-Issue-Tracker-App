@@ -4,6 +4,8 @@ obj/
 
 # SQLite database
 *.db
+*.db-wal
+*.db-shm
 
 # User-specific files
 .vs/
