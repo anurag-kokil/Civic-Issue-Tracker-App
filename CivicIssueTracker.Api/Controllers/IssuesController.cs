@@ -5,6 +5,7 @@ using System.Security.Claims;
 using CivicIssueTracker.Api.Data;
 using CivicIssueTracker.Api.DTOs.Issues;
 using CivicIssueTracker.Api.Models;
+using CivicIssueTracker.Api.Helpers;
 
 namespace CivicIssueTracker.Api.Controllers;
 
@@ -73,5 +74,31 @@ public class IssuesController : ControllerBase
             .ToListAsync();
 
         return Ok(issues);
+    }
+
+    [HttpPut("{id}/status")]
+    [Authorize(Roles = "Admin,Officer")]
+    public async Task<IActionResult> UpdateStatus(
+    int id,
+    UpdateIssueStatusDto dto)
+    {
+        var issue = await _context.Issues.FindAsync(id);
+
+        if (issue == null)
+            return NotFound("Issue not found");
+
+        if (!IssueStatus.AllowedTransitions.ContainsKey(issue.Status) ||
+            !IssueStatus.AllowedTransitions[issue.Status]
+                .Contains(dto.NewStatus))
+        {
+            return BadRequest(
+                $"Invalid status transition from {issue.Status} to {dto.NewStatus}"
+            );
+        }
+
+        issue.Status = dto.NewStatus;
+        await _context.SaveChangesAsync();
+
+        return Ok($"Issue status updated to {dto.NewStatus}");
     }
 }
