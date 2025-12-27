@@ -80,7 +80,7 @@ public class IssuesController : ControllerBase
     [Authorize(Roles = "Admin,Officer")]
     public async Task<IActionResult> UpdateStatus(
     int id,
-    UpdateIssueStatusDto dto)
+    [FromBody] UpdateIssueStatusDto dto)
     {
         var issue = await _context.Issues.FindAsync(id);
 
@@ -88,17 +88,50 @@ public class IssuesController : ControllerBase
             return NotFound("Issue not found");
 
         if (!IssueStatus.AllowedTransitions.ContainsKey(issue.Status) ||
-            !IssueStatus.AllowedTransitions[issue.Status]
-                .Contains(dto.NewStatus))
+            !IssueStatus.AllowedTransitions[issue.Status].Contains(dto.NewStatus))
         {
             return BadRequest(
                 $"Invalid status transition from {issue.Status} to {dto.NewStatus}"
             );
         }
 
+        var userId = int.Parse(
+            User.FindFirstValue(ClaimTypes.NameIdentifier)!
+        );
+
+        // Add history record
+        var history = new IssueStatusHistory
+        {
+            IssueId = issue.Id,
+            OldStatus = issue.Status,
+            NewStatus = dto.NewStatus,
+            ChangedByUserId = userId
+        };
+
         issue.Status = dto.NewStatus;
+
+        _context.IssueStatusHistories.Add(history);
         await _context.SaveChangesAsync();
 
         return Ok($"Issue status updated to {dto.NewStatus}");
+    }
+
+    [HttpGet("{id}/history")]
+    [Authorize]
+    public async Task<IActionResult> GetStatusHistory(int id)
+    {
+        var history = await _context.IssueStatusHistories
+            .Where(h => h.IssueId == id)
+            .OrderBy(h => h.ChangedAt)
+            .Select(h => new IssueStatusHistoryDto
+            {
+                OldStatus = h.OldStatus,
+                NewStatus = h.NewStatus,
+                ChangedByUserId = h.ChangedByUserId,
+                ChangedAt = h.ChangedAt
+            })
+            .ToListAsync();
+
+        return Ok(history);
     }
 }

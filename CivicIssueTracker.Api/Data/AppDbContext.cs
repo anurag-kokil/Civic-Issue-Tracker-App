@@ -16,5 +16,6 @@ namespace CivicIssueTracker.Api.Data
 
         public DbSet<User> Users => Set<User>();
         public DbSet<Issue> Issues => Set<Issue>();
+        public DbSet<IssueStatusHistory> IssueStatusHistories => Set<IssueStatusHistory>();
     }
 }
