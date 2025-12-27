@@ -6,6 +6,8 @@ using CivicIssueTracker.Api.Data;
 using CivicIssueTracker.Api.DTOs.Issues;
 using CivicIssueTracker.Api.Models;
 using CivicIssueTracker.Api.Helpers;
+using Microsoft.AspNetCore.Http;
+using System.IO;
 
 namespace CivicIssueTracker.Api.Controllers;
 
@@ -23,9 +25,40 @@ public class IssuesController : ControllerBase
 
     // Citizen: Report Issue
     [HttpPost]
-    public async Task<IActionResult> Create(CreateIssueRequestDto dto)
+    public async Task<IActionResult> Create([FromForm] CreateIssueWithImageDto dto)
     {
         var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+
+        string? imageUrl = null;
+
+        if (dto.Image != null)
+        {
+            // Validate file
+            var allowedTypes = new[] { ".jpg", ".jpeg", ".png" };
+            var extension = Path.GetExtension(dto.Image.FileName).ToLower();
+
+            if (!allowedTypes.Contains(extension))
+                return BadRequest("Only JPG and PNG images are allowed");
+
+            if (dto.Image.Length > 5 * 1024 * 1024)
+                return BadRequest("Image size must be less than 5MB");
+
+            var uploadsFolder = Path.Combine(
+                Directory.GetCurrentDirectory(),
+                "wwwroot",
+                "uploads",
+                "issues"
+            );
+            Directory.CreateDirectory(uploadsFolder);
+
+            var fileName = $"{Guid.NewGuid()}{extension}";
+            var filePath = Path.Combine(uploadsFolder, fileName);
+
+            using var stream = new FileStream(filePath, FileMode.Create);
+            await dto.Image.CopyToAsync(stream);
+
+            imageUrl = $"/uploads/issues/{fileName}";
+        }
 
         var issue = new Issue
         {
@@ -34,6 +67,7 @@ public class IssuesController : ControllerBase
             Category = dto.Category,
             Latitude = dto.Latitude,
             Longitude = dto.Longitude,
+            ImageUrl = imageUrl,
             ReportedByUserId = userId
         };
 
