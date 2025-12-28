@@ -42,11 +42,26 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 builder.Services.AddAuthorization();
 
+// CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AngularClient", policy =>
+    {
+        policy
+            .WithOrigins("http://localhost:4200")
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
+});
+
 var app = builder.Build();
 
 // Swagger
 app.UseSwagger();
 app.UseSwaggerUI();
+
+// Enable CORS
+app.UseCors("AngularClient");
 
 // Middleware Order Matters
 app.UseHttpsRedirection();

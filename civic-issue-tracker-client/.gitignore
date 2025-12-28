@@ -1,0 +1,69 @@
+# ================================
+# Angular build output
+# ================================
+/dist/
+/out-tsc/
+/tmp/
+/bazel-out/
+
+# ================================
+# Angular cache
+# ================================
+/.angular/cache/
+
+# ================================
+# Node.js
+# ================================
+/node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# ================================
+# SSR / Angular Universal
+# ================================
+/dist/server/
+/dist/browser/
+
+# ================================
+# Coverage / Testing
+# ================================
+/coverage/
+testem.log
+
+# ================================
+# Environment files (IMPORTANT)
+# ================================
+/src/environments/environment*.ts
+
+# ================================
+# IDEs & Editors
+# ================================
+.idea/
+.project
+.classpath
+.c9/
+.settings/
+*.launch
+*.sublime-workspace
+
+# ================================
+# VS Code (keep useful configs)
+# ================================
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# ================================
+# Logs
+# ================================
+*.log
+
+# ================================
+# OS files
+# ================================
+.DS_Store
+Thumbs.db
