@@ -11,6 +11,6 @@ export const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'issues', component: IssueListComponent, canActivate: [authGuard] },
   { path: 'issues/create', component: IssueCreateComponent, canActivate: [authGuard] },
-  { path: 'admin', component: AdminDashboardComponent, canActivate: [authGuard, roleGuard(['Admin', 'Officer'])] },
+  { path: 'admin', component: AdminDashboardComponent, canActivate: [authGuard, roleGuard(['Admin'])] },
   { path: '', redirectTo: 'login', pathMatch: 'full' }
 ];
