@@ -1,0 +1,53 @@
+<div class="container mt-4">
+  <h2 class="text-primary mb-4">
+    Admin / Officer Dashboard
+  </h2>
+
+  <div *ngIf="loading" class="alert alert-info">
+    Loading issues...
+  </div>
+
+  <table class="table table-bordered table-hover" *ngIf="!loading">
+    <thead class="table-light">
+      <tr>
+        <th>Title</th>
+        <th>Category</th>
+        <th>Reported By</th>
+        <th>Status</th>
+        <th>Update</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr *ngFor="let issue of issues">
+        <td>{{ issue.title }}</td>
+        <td>{{ issue.category }}</td>
+        <td>{{ issue.reportedByUserId }}</td>
+
+        <td>
+            <span class="badge" [ngClass]="getStatusClass(issue.status)">
+            {{ issue.status }}
+            </span>
+        </td>
+
+        <td>
+            <select
+                #statusSelect
+                class="form-select"
+                [disabled]="getNextStatuses(issue.status).length === 0"
+                (change)="updateStatus(issue,statusSelect.value)">
+                >
+
+                <option value="">{{ issue.status }}</option>
+
+                <option
+                *ngFor="let s of getNextStatuses(issue.status)"
+                [value]="s">
+                {{ s }}
+                </option>
+            </select>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
