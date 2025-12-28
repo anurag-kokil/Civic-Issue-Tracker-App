@@ -1,7 +1,39 @@
-<h2>My Issues</h2>
+<div class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h2 class="text-primary">My Issues</h2>
+    <a class="btn btn-success" routerLink="/issues/create"> + Report Issue </a>
+  </div>
 
-<ul>
-  <li *ngFor="let issue of issues">
-    {{ issue.title }} - {{ issue.status }}
-  </li>
-</ul>
+  <div *ngIf="loading" class="alert alert-info">Loading issues...</div>
+
+  <div *ngIf="error" class="alert alert-danger">
+    {{ error }}
+  </div>
+
+  <div *ngIf="issues.length === 0 && !loading" class="alert alert-warning">
+    No issues reported yet.
+  </div>
+
+  <div class="row">
+    <div class="col-md-4 mb-3" *ngFor="let issue of issues">
+      <div class="card h-100 shadow-sm">
+        <img
+          *ngIf="issue.imageUrl"
+          [src]="'http://localhost:5088' + issue.imageUrl"
+          class="card-img-top"
+          alt="Issue image"
+        />
+
+        <div class="card-body">
+          <h5 class="card-title">{{ issue.title }}</h5>
+          <p class="card-text">
+            Category: <strong>{{ issue.category }}</strong>
+          </p>
+          <span class="badge bg-secondary">
+            {{ issue.status }}
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

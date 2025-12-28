@@ -1,9 +1,35 @@
-<h2>Login</h2>
+<div class="container vh-100 d-flex justify-content-center align-items-center">
+  <div class="card shadow-lg p-4" style="width: 380px;">
+    
+    <h3 class="text-center mb-4 text-primary">
+      Civic Issue Tracker
+    </h3>
 
-<input placeholder="Email" [(ngModel)]="model.email" />
-<br /><br />
+    <div class="mb-3">
+      <label class="form-label">Email</label>
+      <input
+        type="email"
+        class="form-control"
+        placeholder="Enter email"
+        [(ngModel)]="model.email"
+      />
+    </div>
 
-<input type="password" placeholder="Password" [(ngModel)]="model.password" />
-<br /><br />
+    <div class="mb-3">
+      <label class="form-label">Password</label>
+      <input
+        type="password"
+        class="form-control"
+        placeholder="Enter password"
+        [(ngModel)]="model.password"
+      />
+    </div>
 
-<button (click)="login()">Login</button>
+    <button
+      class="btn btn-primary w-100"
+      (click)="login()">
+      Login
+    </button>
+
+  </div>
+</div>

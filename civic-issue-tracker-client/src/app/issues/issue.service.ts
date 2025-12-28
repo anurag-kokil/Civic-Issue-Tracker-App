@@ -10,4 +10,12 @@ export class IssueService {
   getMyIssues() {
     return this.http.get<any[]>(`${this.apiUrl}/my`);
   }
+
+  createIssue(data: FormData) {
+  return this.http.post(
+    'http://localhost:5088/api/issues',
+    data
+  );
+}
+
 }
