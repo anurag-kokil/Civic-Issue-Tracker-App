@@ -1,7 +1,15 @@
-<nav class="navbar navbar-dark bg-primary px-3">
+<nav *ngIf="showNavbar()" class="navbar navbar-expand navbar-dark bg-primary px-3">
   <span class="navbar-brand">
     Civic Issue Tracker
   </span>
+
+  <div class="ms-auto" *ngIf="auth.isLoggedIn()">
+    <button
+      class="btn btn-outline-light"
+      (click)="logout()">
+      Logout
+    </button>
+  </div>
 </nav>
 
 <router-outlet />
