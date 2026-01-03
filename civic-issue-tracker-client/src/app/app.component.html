@@ -1,14 +1,18 @@
-<nav *ngIf="showNavbar()" class="navbar navbar-expand navbar-dark bg-primary px-3">
-  <span class="navbar-brand">
-    Civic Issue Tracker
-  </span>
+<nav
+  *ngIf="showNavbar()"
+  class="navbar navbar-expand navbar-dark bg-primary px-3"
+>
+  <span class="navbar-brand"> Civic Issue Tracker </span>
+
+  <ul class="navbar-nav ms-auto align-items-center">
+    <!-- Admin Menu Item -->
+    <li class="nav-item" *ngIf="canSeeAdminMenu()">
+      <a class="nav-link text-white" routerLink="/admin"> Admin Dashboard </a>
+    </li>
+  </ul>
 
   <div class="ms-auto" *ngIf="auth.isLoggedIn()">
-    <button
-      class="btn btn-outline-light"
-      (click)="logout()">
-      Logout
-    </button>
+    <button class="btn btn-outline-light" (click)="logout()">Logout</button>
   </div>
 </nav>
 

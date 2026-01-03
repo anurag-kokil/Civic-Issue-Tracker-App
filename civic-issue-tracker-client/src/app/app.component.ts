@@ -24,4 +24,10 @@ export class AppComponent {
   showNavbar(): boolean {
     return this.auth.isLoggedIn() && this.router.url !== '/login';
   }
+
+  canSeeAdminMenu(): boolean {
+  const role = this.auth.getUserRole();
+  return role === 'Admin';
+}
+
 }
