@@ -1,75 +1,130 @@
 <div class="container mt-4">
   <div class="card shadow p-4">
+    <h3 class="mb-4 text-primary">Report a New Issue</h3>
 
-    <h3 class="mb-4 text-primary">
-      Report a New Issue
-    </h3>
+    <form #issueForm="ngForm" (ngSubmit)="submit(issueForm)">
+      <div class="mb-3">
+        <label class="form-label">Title</label>
 
-    <div class="mb-3">
-      <label class="form-label">Title</label>
-      <input
-        type="text"
-        class="form-control"
-        [(ngModel)]="model.title"
-      />
-    </div>
-
-    <div class="mb-3">
-      <label class="form-label">Description</label>
-      <textarea
-        class="form-control"
-        rows="3"
-        [(ngModel)]="model.description">
-      </textarea>
-    </div>
-
-    <div class="mb-3">
-      <label class="form-label">Category</label>
-      <select
-        class="form-select"
-        [(ngModel)]="model.category">
-        <option value="">Select category</option>
-        <option>Road</option>
-        <option>Water</option>
-        <option>Electricity</option>
-        <option>Garbage</option>
-      </select>
-    </div>
-
-    <div class="row">
-      <div class="col-md-6 mb-3">
-        <label class="form-label">Latitude</label>
         <input
-          type="number"
+          type="text"
           class="form-control"
-          [(ngModel)]="model.latitude"
+          [class.is-invalid]="title.invalid && title.touched"
+          name="title"
+          required
+          minlength="5"
+          [(ngModel)]="model.title"
+          #title="ngModel"
+        />
+
+        <div class="text-danger mt-1" *ngIf="title.invalid && title.touched">
+          <div *ngIf="title.errors?.['required']">Title is required</div>
+          <div *ngIf="title.errors?.['minlength']">
+            Title must be at least 5 characters
+          </div>
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Description</label>
+
+        <textarea
+          class="form-control"
+          [class.is-invalid]="description.invalid && description.touched"
+          rows="3"
+          name="description"
+          required
+          [(ngModel)]="model.description"
+          #description="ngModel"
+        >
+        </textarea>
+
+        <div
+          class="text-danger mt-1"
+          *ngIf="description.invalid && description.touched"
+        >
+          Description is required
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Category</label>
+
+        <select
+          class="form-select"
+          [class.is-invalid]="category.invalid && category.touched"
+          name="category"
+          required
+          [(ngModel)]="model.category"
+          #category="ngModel"
+        >
+          <option value="">Select category</option>
+          <option>Road</option>
+          <option>Water</option>
+          <option>Electricity</option>
+          <option>Garbage</option>
+        </select>
+
+        <div
+          class="text-danger mt-1"
+          *ngIf="category.invalid && category.touched"
+        >
+          Category is required
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-6 mb-3">
+          <label class="form-label">Latitude</label>
+          <input
+            type="number"
+            class="form-control"
+            [class.is-invalid]="lat.invalid && lat.touched"
+            name="latitude"
+            required
+            [(ngModel)]="model.latitude"
+            #lat="ngModel"
+          />
+
+          <div class="text-danger mt-1" *ngIf="lat.invalid && lat.touched">
+            Latitude is required
+          </div>
+        </div>
+
+        <div class="col-md-6 mb-3">
+          <label class="form-label">Longitude</label>
+          <input
+            type="number"
+            class="form-control"
+            [class.is-invalid]="lon.invalid && lon.touched"
+            name="Longitude"
+            required
+            [(ngModel)]="model.longitude"
+            #lon="ngModel"
+          />
+
+          <div class="text-danger mt-1" *ngIf="lon.invalid && lon.touched">
+            Longitude is required
+          </div>
+        </div>
+      </div>
+
+      <div class="mb-3">
+        <label class="form-label">Issue Image</label>
+        <input
+          type="file"
+          class="form-control"
+          (change)="onFileSelected($event)"
         />
       </div>
 
-      <div class="col-md-6 mb-3">
-        <label class="form-label">Longitude</label>
-        <input
-          type="number"
-          class="form-control"
-          [(ngModel)]="model.longitude"
-        />
-      </div>
-    </div>
-
-    <div class="mb-3">
-      <label class="form-label">Issue Image</label>
-      <input
-        type="file"
-        class="form-control"
-        (change)="onFileSelected($event)"
-      />
-    </div>
-
-    <button
-      class="btn btn-primary"
-      (click)="submit()">
-      Submit Issue
-    </button>
-
+      <button
+        class="btn btn-primary"
+        type="submit"
+        [disabled]="issueForm.invalid"
+      >
+        Submit Issue
+      </button>
+    </form>
   </div>
 </div>

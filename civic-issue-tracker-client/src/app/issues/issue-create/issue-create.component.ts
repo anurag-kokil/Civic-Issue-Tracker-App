@@ -31,7 +31,11 @@ export class IssueCreateComponent {
     this.selectedFile = event.target.files[0];
   }
 
-  submit() {
+  submit(form: any) {
+    if (form.invalid) {
+      return;
+    }
+
     const formData = new FormData();
 
     formData.append('title', this.model.title);
@@ -44,8 +48,14 @@ export class IssueCreateComponent {
       formData.append('image', this.selectedFile);
     }
 
-    this.issueService.createIssue(formData).subscribe(() => {
-      this.router.navigate(['/issues']);
+    this.issueService.createIssue(formData).subscribe({
+      next: () => {
+        this.router.navigate(['/issues']);
+      },
+      error: () => {
+        alert('Failed to submit issue. Please try again.');
+      }
     });
   }
+
 }
