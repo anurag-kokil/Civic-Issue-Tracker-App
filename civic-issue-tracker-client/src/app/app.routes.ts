@@ -6,9 +6,10 @@ import { AdminDashboardComponent } from './admin/admin-dashboard/admin-dashboard
 
 import { authGuard } from './core/guards/auth.guard';
 import { roleGuard } from './core/guards/role.guard';
+import { loginGuard } from './core/guards/login.guard';
 
 export const routes: Routes = [
-  { path: 'login', component: LoginComponent },
+  { path: 'login', component: LoginComponent, canActivate: [loginGuard] },
   { path: 'issues', component: IssueListComponent, canActivate: [authGuard] },
   { path: 'issues/create', component: IssueCreateComponent, canActivate: [authGuard] },
   { path: 'admin', component: AdminDashboardComponent, canActivate: [authGuard, roleGuard(['Admin'])] },
