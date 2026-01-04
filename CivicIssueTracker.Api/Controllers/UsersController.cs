@@ -10,11 +10,14 @@ using CivicIssueTracker.Api.Data;
 
 namespace CivicIssueTracker.Api.Controllers
 {
-    public class UserController : ControllerBase
+    [ApiController]
+    [Route("api/users")]
+    [Authorize(Roles = "Admin")]
+    public class UsersController : ControllerBase
     {
         private readonly AppDbContext _context;
 
-        public UserController(AppDbContext context)
+        public UsersController(AppDbContext context)
         {
             _context = context;
         }

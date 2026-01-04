@@ -14,7 +14,7 @@
         <th>Category</th>
         <th>Reported By</th>
         <th>Status</th>
-        <th>Update</th>
+        <th>Assign Officer</th>
       </tr>
     </thead>
 
@@ -29,23 +29,32 @@
             {{ issue.status }}
             </span>
         </td>
-
         <td>
+          <div *ngIf="issue.status === 'Reported'">
             <select
-                #statusSelect
-                class="form-select"
-                [disabled]="getNextStatuses(issue.status).length === 0"
-                (change)="updateStatus(issue,statusSelect.value)">
-                >
+              class="form-select mb-2"
+              [(ngModel)]="selectedOfficer[issue.id]">
 
-                <option value="">{{ issue.status }}</option>
+              <option value="">Select Officer</option>
 
-                <option
-                *ngFor="let s of getNextStatuses(issue.status)"
-                [value]="s">
-                {{ s }}
-                </option>
+              <option *ngFor="let o of officers" [value]="o.id">
+                {{ o.name }} ({{ o.email }})
+              </option>
             </select>
+
+            <button
+              class="btn btn-sm btn-primary w-100"
+              (click)="assignIssue(issue.id)">
+              Assign
+            </button>
+          </div>
+
+          <span *ngIf="issue.status !== 'Reported'" class="text-muted">
+            Assigned to:
+            <strong>
+              {{ issue.assignedOfficer?.name || 'N/A' }}
+            </strong>
+          </span>
         </td>
       </tr>
     </tbody>

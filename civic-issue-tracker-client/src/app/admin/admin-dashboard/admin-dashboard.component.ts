@@ -13,8 +13,8 @@ export class AdminDashboardComponent implements OnInit {
 
   issues: Issue[] = [];
   loading = true;
-
-  // statuses = ['Reported','Assigned', 'InProgress', 'Resolved', 'Closed'];
+  officers: any[] = [];
+  selectedOfficer: Record<number, number> = {};
 
   allowedTransitions: Record<string, string[]> = {
     Reported: ['Assigned'],
@@ -29,6 +29,7 @@ export class AdminDashboardComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadIssues();
+    this.loadOfficers();
   }
 
   loadIssues() {
@@ -38,11 +39,29 @@ export class AdminDashboardComponent implements OnInit {
     });
   }
 
-  // updateStatus(issue: Issue, newStatus: string) {
-  //   this.issueService.updateStatus(issue.id, newStatus).subscribe(() => {
-  //     issue.status = newStatus; // UI update
-  //   });
-  // }
+  loadOfficers() {
+    this.issueService.getOfficers().subscribe(data => {
+      this.officers = data;
+    });
+  }
+
+  assignIssue(issueId: number) {
+    const officerId = this.selectedOfficer[issueId];
+    if (!officerId) {
+      alert('Please select an officer');
+      return;
+    }
+
+    this.issueService.assignIssue(issueId, officerId).subscribe({
+      next: () => {
+        this.loadIssues(); // refresh UI
+      },
+      error: () => {
+        alert('Failed to assign issue');
+      }
+    });
+  }
+
 
   updateStatus(issue: Issue, newStatus: string) {
   if (!newStatus || newStatus === issue.status) return;

@@ -12,6 +12,12 @@ export interface Issue {
   imageUrl?: string;
   latitude?: number;
   longitude?: number;
+  assignedOfficerId?: number;
+  assignedOfficer?: {
+    id: number;
+    name: string;
+    email: string;
+  };
 }
 
 @Injectable({ providedIn: 'root' })
@@ -38,7 +44,7 @@ export class IssueService {
     );
   }
 
-  /** Admin / Officer: update issue status */
+  /** Admin update issue status */
   updateStatus(issueId: number, newStatus: string) {
     return this.http.put(
       `http://localhost:5088/api/issues/${issueId}/status`,
@@ -47,5 +53,18 @@ export class IssueService {
     );
   }
 
+  getOfficers() {
+    return this.http.get<any[]>(
+      'http://localhost:5088/api/users/officers'
+    );
+  }
+
+  assignIssue(issueId: number, officerId: number) {
+    return this.http.put(
+      `http://localhost:5088/api/issues/${issueId}/assign/${officerId}`,
+      {},
+      { responseType: 'text' }
+    );
+  }
 
 }
