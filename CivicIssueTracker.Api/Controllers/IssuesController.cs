@@ -23,6 +23,35 @@ public class IssuesController : ControllerBase
         _context = context;
     }
 
+    [HttpGet]
+    [Authorize]
+    public async Task<IActionResult> GetIssues()
+    {
+        var userId = int.Parse(
+            User.FindFirstValue(ClaimTypes.NameIdentifier)!
+        );
+
+        var role =
+            User.FindFirstValue(ClaimTypes.Role)
+            ?? User.FindFirst("http://schemas.microsoft.com/ws/2008/06/identity/claims/role")?.Value;
+
+        IQueryable<Issue> query = _context.Issues
+            .Include(i => i.AssignedOfficer);
+
+        if (role == "Citizen")
+        {
+            query = query.Where(i => i.ReportedByUserId == userId);
+        }
+        else if (role == "Officer")
+        {
+            query = query.Where(i => i.AssignedOfficerId == userId);
+        }
+        // Admin → all issues
+
+        var issues = await query.ToListAsync();
+        return Ok(issues);
+    }
+
     // Citizen: Report Issue
     [HttpPost]
     public async Task<IActionResult> Create([FromForm] CreateIssueWithImageDto dto)
@@ -75,39 +104,6 @@ public class IssuesController : ControllerBase
         await _context.SaveChangesAsync();
 
         return Ok(issue.Id);
-    }
-
-    // Citizen: View My Issues
-    [HttpGet("my")]
-    public async Task<IActionResult> MyIssues()
-    {
-        var userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
-
-        var issues = await _context.Issues
-            .Where(i => i.ReportedByUserId == userId)
-            .Select(i => new IssueResponseDto
-            {
-                Id = i.Id,
-                Title = i.Title,
-                Category = i.Category,
-                Status = i.Status,
-                CreatedAt = i.CreatedAt
-            })
-            .ToListAsync();
-
-        return Ok(issues);
-    }
-
-    // Admin / Officer: View All Issues
-    [HttpGet]
-    [Authorize(Roles = "Admin")]
-    public async Task<IActionResult> GetAll()
-    {
-        var issues = await _context.Issues
-            .OrderByDescending(i => i.CreatedAt)
-            .ToListAsync();
-
-        return Ok(issues);
     }
 
     [HttpPut("{id}/status")]
@@ -168,4 +164,30 @@ public class IssuesController : ControllerBase
 
         return Ok(history);
     }
+
+    [HttpPut("{id}/assign/{officerId}")]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> AssignIssue(int id, int officerId)
+    {
+        var issue = await _context.Issues.FindAsync(id);
+        if (issue == null)
+            return NotFound("Issue not found");
+
+        if (issue.Status != IssueStatus.Reported)
+            return BadRequest("Only reported issues can be assigned");
+
+        var officer = await _context.Users
+            .FirstOrDefaultAsync(u => u.Id == officerId && u.Role == "Officer");
+
+        if (officer == null)
+            return BadRequest("Invalid officer");
+
+        issue.AssignedOfficerId = officerId;
+        issue.Status = IssueStatus.Assigned;
+
+        await _context.SaveChangesAsync();
+
+        return Ok("Issue assigned successfully");
+    }
+
 }

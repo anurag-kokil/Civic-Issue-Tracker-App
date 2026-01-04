@@ -24,7 +24,12 @@ namespace CivicIssueTracker.Api.Models
         public string? ImageUrl { get; set; }
 
         public int ReportedByUserId { get; set; }
+
         public User? ReportedByUser { get; set; }
+
+        public int? AssignedOfficerId { get; set; }
+
+        public User? AssignedOfficer { get; set; }
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     }
